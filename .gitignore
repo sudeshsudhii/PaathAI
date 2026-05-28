@@ -1,0 +1,40 @@
+# .gitignore for PaathAI
+
+# Build output
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE
+.idea/
+*.iml
+*.iws
+.project
+.classpath
+.settings/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+*.env.local
+
+# Logs
+*.log
+logs/
+
+# Audio files (large, don't commit)
+*.mp3
+*.wav
+*.m4a
+*.ogg
+*.flac
+
+# Docker
+docker-compose.override.yml

@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:paathai_test
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  flyway:
+    enabled: false
+
+# Mock external services in tests
+paathai:
+  whisper:
+    url: http://localhost:0
+  ai:
+    gemini:
+      api-key: test-key
+      model-flash: gemini-flash-test
+      model-pro: gemini-pro-test
+
+logging:
+  level:
+    com.paathai: DEBUG
