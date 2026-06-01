@@ -13,4 +13,9 @@ public interface NotesGenerationService {
      * @return The generated notes ID
      */
     Long generateNotes(Long lectureId);
+
+    /**
+     * Event listener for TranscriptCompleted.
+     */
+    void onTranscriptCompleted(com.paathai.common.event.TranscriptCompleted event);
 }
