@@ -24,6 +24,11 @@ spring:
       max-file-size: 500MB
       max-request-size: 500MB
 
+# JWT Configuration
+jwt:
+  secret: "PaathAI-Super-Secret-Key-Min-32-Chars-Long-For-HS256-Encryption-MVP"
+  expiration: 86400000  # 24 hours
+
 # PaathAI custom properties
 paathai:
   prompts:
