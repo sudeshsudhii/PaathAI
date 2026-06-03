@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PaathAI — AI-Powered Learning Intelligence</title>
+    <meta name="description" content="Upload lectures, get AI-generated notes, and search your knowledge base with semantic search.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-card-hover: rgba(255, 255, 255, 0.06);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(124, 58, 237, 0.5);
+            --text-primary: #f0f0f5;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent-primary: #7c3aed;
+            --accent-secondary: #6d28d9;
+            --accent-glow: rgba(124, 58, 237, 0.15);
+            --gradient-1: linear-gradient(135deg, #7c3aed 0%, #2563eb 50%, #06b6d4 100%);
+            --gradient-2: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+            --gradient-3: linear-gradient(180deg, rgba(124,58,237,0.08) 0%, transparent 100%);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 40px rgba(124,58,237,0.15);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Background gradient orbs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -200px;
+            left: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(37,99,235,0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #root {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== Typography ========== */
+        h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
+        h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+        h3 { font-size: 1.125rem; font-weight: 600; }
+
+        /* ========== Auth Page ========== */
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: var(--bg-primary);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .auth-logo h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-logo p {
+            color: var(--text-secondary);
+            font-size: 0.938rem;
+        }
+
+        .auth-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.75rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: var(--radius-md);
+            padding: 4px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.625rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .auth-tab.active {
+            background: var(--accent-primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(124,58,237,0.3);
+        }
+
+        /* ========== Form Elements ========== */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: inherit;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background: rgba(255,255,255,0.06);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ========== Buttons ========== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 2px 12px rgba(124,58,237,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .btn-full { width: 100%; }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.8125rem; }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ========== Navigation ========== */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(10,10,15,0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .nav-brand {
+            font-size: 1.375rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-link.active { color: var(--accent-primary); background: var(--accent-glow); }
+
+        .nav-link.logout {
+            color: var(--error);
+        }
+        .nav-link.logout:hover {
+            background: rgba(239,68,68,0.1);
+        }
+
+        /* ========== Main Layout ========== */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        /* ========== Cards ========== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: rgba(255,255,255,0.12);
+            background: var(--bg-card-hover);
+        }
+
+        /* ========== Upload Area ========== */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: transparent;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--accent-primary);
+            background: var(--accent-glow);
+        }
+
+        .upload-zone-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .upload-zone-text {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-zone-hint {
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+        }
+
+        .upload-selected {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(124,58,237,0.1);
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+        }
+
+        .upload-selected-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .upload-selected-size {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        /* ========== Lectures Grid ========== */
+        .lectures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .lecture-card {
+            cursor: pointer;
+        }
+
+        .lecture-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .lecture-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .lecture-card-date {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* ========== Status Badges ========== */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .badge-pending {
+            background: rgba(245,158,11,0.12);
+            color: var(--warning);
+            border: 1px solid rgba(245,158,11,0.2);
+        }
+
+        .badge-transcribing {
+            background: rgba(59,130,246,0.12);
+            color: var(--info);
+            border: 1px solid rgba(59,130,246,0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .badge-completed {
+            background: rgba(16,185,129,0.12);
+            color: var(--success);
+            border: 1px solid rgba(16,185,129,0.2);
+        }
+
+        .badge-failed {
+            background: rgba(239,68,68,0.12);
+            color: var(--error);
+            border: 1px solid rgba(239,68,68,0.2);
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* ========== Search ========== */
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.25rem 1rem 3rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow-glow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.125rem;
+        }
+
+        /* ========== Search Results ========== */
+        .result-answer {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .result-answer-label {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .result-sources {
+            margin-top: 1.5rem;
+        }
+
+        .result-sources-label {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .source-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .source-card-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .source-card-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ========== Notes View ========== */
+        .notes-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            line-height: 1.8;
+        }
+
+        .notes-container h1, .notes-container h2, .notes-container h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .notes-container p { margin-bottom: 1rem; }
+        .notes-container ul, .notes-container ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        .notes-container li { margin-bottom: 0.5rem; }
+        .notes-container strong { color: var(--text-primary); }
+
+        /* ========== Empty State ========== */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-state-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-text {
+            color: var(--text-muted);
+            font-size: 0.9375rem;
+        }
+
+        /* ========== Loading ========== */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* ========== Toast ========== */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.875rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 100;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .toast-success { border-left: 3px solid var(--success); }
+        .toast-error { border-left: 3px solid var(--error); }
+
+        /* ========== Animations ========== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .nav-inner { padding: 0 1rem; }
+            .main { padding: 1rem; }
+            .lectures-grid { grid-template-columns: 1fr; }
+            .nav-links { gap: 0; }
+            .nav-link { padding: 0.5rem 0.625rem; font-size: 0.8125rem; }
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const API_URL = "http://localhost:8080/api";
+
+// ==================== HOOKS ====================
+function useAuth() {
+    const [token, setToken] = React.useState(localStorage.getItem("paathai_token"));
+    const [user, setUser] = React.useState(JSON.parse(localStorage.getItem("paathai_user") || "null"));
+
+    const login = (tokenVal, userData) => {
+        localStorage.setItem("paathai_token", tokenVal);
+        localStorage.setItem("paathai_user", JSON.stringify(userData));
+        setToken(tokenVal);
+        setUser(userData);
+    };
+
+    const logout = () => {
+        localStorage.removeItem("paathai_token");
+        localStorage.removeItem("paathai_user");
+        setToken(null);
+        setUser(null);
+    };
+
+    return { token, user, login, logout, isAuthenticated: !!token };
+}
+
+function useToast() {
+    const [toast, setToast] = React.useState(null);
+    
+    const show = (message, type = "success") => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3500);
+    };
+
+    return { toast, show };
+}
+
+// ==================== API ====================
+async function apiCall(endpoint, options = {}, token = null) {
+    const headers = { ...options.headers };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (options.body && !(options.body instanceof FormData)) {
+        headers["Content-Type"] = "application/json";
+    }
+
+    const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+    
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: "Request failed" }));
+        throw new Error(errorData.error || `HTTP ${res.status}`);
+    }
+    
+    return res.json();
+}
+
+// ==================== AUTH PAGE ====================
+function AuthPage({ onLogin }) {
+    const [mode, setMode] = React.useState("login");
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const [fullName, setFullName] = React.useState("");
+    const [loading, setLoading] = React.useState(false);
+    const [error, setError] = React.useState("");
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
+
+        try {
+            const endpoint = mode === "login" ? "/auth/login" : "/auth/register";
+            const body = mode === "login" 
+                ? { email, password }
+                : { email, password, fullName };
+
+            const data = await apiCall(endpoint, {
+                method: "POST",
+                body: JSON.stringify(body)
+            });
+
+            onLogin(data.token, {
+                userId: data.userId,
+                email: data.email,
+                fullName: data.fullName,
+                defaultCourseId: data.defaultCourseId
+            });
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="auth-page">
+            <div className="auth-container">
+                <div className="auth-logo">
+                    <h1>PaathAI</h1>
+                    <p>AI-Powered Learning Intelligence</p>
+                </div>
+
+                <div className="auth-card">
+                    <div className="auth-tabs">
+                        <button 
+                            className={`auth-tab ${mode === "login" ? "active" : ""}`}
+                            onClick={() => { setMode("login"); setError(""); }}>
+                            Sign In
+                        </button>
+                        <button 
+                            className={`auth-tab ${mode === "register" ? "active" : ""}`}
+                            onClick={() => { setMode("register"); setError(""); }}>
+                            Create Account
+                        </button>
+                    </div>
+
+                    <form onSubmit={handleSubmit}>
+                        {mode === "register" && (
+                            <div className="form-group">
+                                <label className="form-label">Full Name</label>
+                                <input 
+                                    id="auth-fullname"
+                                    type="text"
+                                    className="form-input"
+                                    placeholder="Enter your name"
+                                    value={fullName}
+                                    onChange={e => setFullName(e.target.value)}
+                                    required={mode === "register"}
+                                />
+                            </div>
+                        )}
+                        <div className="form-group">
+                            <label className="form-label">Email</label>
+                            <input 
+                                id="auth-email"
+                                type="email"
+                                className="form-input"
+                                placeholder="you@university.edu"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Password</label>
+                            <input 
+                                id="auth-password"
+                                type="password"
+                                className="form-input"
+                                placeholder="Min 6 characters"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                required
+                                minLength="6"
+                            />
+                        </div>
+
+                        {error && (
+                            <div style={{
+                                padding: "0.75rem 1rem",
+                                background: "rgba(239,68,68,0.1)",
+                                border: "1px solid rgba(239,68,68,0.2)",
+                                borderRadius: "var(--radius-md)",
+                                color: "var(--error)",
+                                fontSize: "0.875rem",
+                                marginBottom: "1rem"
+                            }}>
+                                {error}
+                            </div>
+                        )}
+
+                        <button 
+                            id="auth-submit"
+                            type="submit" 
+                            className="btn btn-primary btn-full"
+                            disabled={loading}>
+                            {loading ? (
+                                <><span className="spinner" style={{width:16,height:16,borderWidth:2}}/> Processing...</>
+                            ) : (
+                                mode === "login" ? "Sign In" : "Create Account"
+                            )}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ==================== DASHBOARD ====================
+function Dashboard({ token, showToast }) {
+    const [lectures, setLectures] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [title, setTitle] = React.useState("");
+    const [file, setFile] = React.useState(null);
+    const [uploading, setUploading] = React.useState(false);
+    const [selectedLecture, setSelectedLecture] = React.useState(null);
+    const [notes, setNotes] = React.useState(null);
+    const [notesLoading, setNotesLoading] = React.useState(false);
+    const fileInputRef = React.useRef(null);
+
+    const fetchLectures = async () => {
+        try {
+            const data = await apiCall("/lectures", {}, token);
+            setLectures(data);
+        } catch (err) {
+            console.error("Failed to fetch lectures:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    React.useEffect(() => {
+        fetchLectures();
+        // Poll for status updates every 10 seconds
+        const interval = setInterval(fetchLectures, 10000);
+        return () => clearInterval(interval);
+    }, [token]);
+
+    const handleUpload = async (e) => {
+        e.preventDefault();
+        if (!file || !title.trim()) return;
+
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("title", title);
+
+            await apiCall("/lectures/upload", {
+                method: "POST",
+                body: formData
+            }, token);
+
+            showToast("Lecture uploaded! Processing will begin shortly.", "success");
+            setTitle("");
+            setFile(null);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+            fetchLectures();
+        } catch (err) {
+            showToast("Upload failed: " + err.message, "error");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const viewNotes = async (lecture) => {
+        setSelectedLecture(lecture);
+        setNotesLoading(true);
+        try {
+            const data = await apiCall(`/lectures/${lecture.id}/notes`, {}, token);
+            setNotes(data);
+        } catch (err) {
+            setNotes({ content: "Failed to load notes: " + err.message });
+        } finally {
+            setNotesLoading(false);
+        }
+    };
+
+    if (selectedLecture) {
+        return (
+            <div style={{animation: "fadeInUp 0.3s ease-out"}}>
+                <div style={{display:"flex",alignItems:"center",gap:"1rem",marginBottom:"1.5rem"}}>
+                    <button 
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => { setSelectedLecture(null); setNotes(null); }}>
+                        ← Back
+                    </button>
+                    <h2>{selectedLecture.title}</h2>
+                    <StatusBadge status={selectedLecture.status} />
+                </div>
+
+                {notesLoading ? (
+                    <div className="loading"><span className="spinner" /> Loading notes...</div>
+                ) : notes ? (
+                    <div className="notes-container">
+                        <div style={{whiteSpace:"pre-wrap"}}>{notes.content}</div>
+                        {notes.generatedAt && (
+                            <div style={{marginTop:"1.5rem",paddingTop:"1rem",borderTop:"1px solid var(--border)",fontSize:"0.8125rem",color:"var(--text-muted)"}}>
+                                Generated: {notes.generatedAt}
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="empty-state">
+                        <div className="empty-state-icon">📝</div>
+                        <div className="empty-state-title">No notes yet</div>
+                        <div className="empty-state-text">Notes will be generated automatically after transcription completes.</div>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    return (
+        <div style={{animation: "fadeInUp 0.3s ease-out"}}>
+            <div className="page-header">
+                <h2>Dashboard</h2>
+                <p>Upload lectures and view your AI-generated study materials</p>
+            </div>
+
+            {/* Upload Form */}
+            <div className="card" style={{marginBottom:"2rem"}}>
+                <h3 style={{marginBottom:"1.25rem"}}>📤 Upload Lecture</h3>
+                <form onSubmit={handleUpload}>
+                    <div className="form-group">
+                        <label className="form-label">Lecture Title</label>
+                        <input 
+                            id="upload-title"
+                            type="text"
+                            className="form-input"
+                            placeholder="e.g., Calculus 101 — Derivatives"
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <div 
+                        className="upload-zone"
+                        onClick={() => fileInputRef.current?.click()}
+                        onDragOver={e => { e.preventDefault(); e.currentTarget.classList.add("dragover"); }}
+                        onDragLeave={e => e.currentTarget.classList.remove("dragover")}
+                        onDrop={e => { 
+                            e.preventDefault(); 
+                            e.currentTarget.classList.remove("dragover");
+                            if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+                        }}>
+                        <div className="upload-zone-icon">🎵</div>
+                        <div className="upload-zone-text">
+                            {file ? "" : "Drop your audio file here or click to browse"}
+                        </div>
+                        <div className="upload-zone-hint">MP3, WAV, M4A, FLAC — up to 500MB</div>
+                        <input 
+                            ref={fileInputRef}
+                            type="file"
+                            accept="audio/*"
+                            style={{display:"none"}}
+                            onChange={e => { if (e.target.files[0]) setFile(e.target.files[0]); }}
+                        />
+                    </div>
+
+                    {file && (
+                        <div className="upload-selected">
+                            <span>🎵</span>
+                            <span className="upload-selected-name">{file.name}</span>
+                            <span className="upload-selected-size">
+                                {(file.size / (1024*1024)).toFixed(1)} MB
+                            </span>
+                            <button 
+                                type="button"
+                                onClick={() => { setFile(null); if(fileInputRef.current) fileInputRef.current.value=""; }}
+                                style={{background:"none",border:"none",color:"var(--error)",cursor:"pointer",fontSize:"1.25rem"}}>
+                                ✕
+                            </button>
+                        </div>
+                    )}
+
+                    <button 
+                        id="upload-submit"
+                        type="submit" 
+                        className="btn btn-primary btn-full" 
+                        style={{marginTop:"1.25rem"}}
+                        disabled={uploading || !file || !title.trim()}>
+                        {uploading ? (
+                            <><span className="spinner" style={{width:16,height:16,borderWidth:2}}/> Uploading...</>
+                        ) : (
+                            "Upload & Transcribe"
+                        )}
+                    </button>
+                </form>
+            </div>
+
+            {/* Lectures List */}
+            <div className="page-header">
+                <h2>Your Lectures</h2>
+                <p>{lectures.length} lecture{lectures.length !== 1 ? "s" : ""} uploaded</p>
+            </div>
+
+            {loading ? (
+                <div className="loading"><span className="spinner" /> Loading lectures...</div>
+            ) : lectures.length === 0 ? (
+                <div className="empty-state">
+                    <div className="empty-state-icon">🎓</div>
+                    <div className="empty-state-title">No lectures yet</div>
+                    <div className="empty-state-text">Upload your first lecture to get started with AI-powered study notes.</div>
+                </div>
+            ) : (
+                <div className="lectures-grid">
+                    {lectures.map(lecture => (
+                        <div 
+                            key={lecture.id} 
+                            className="card lecture-card"
+                            onClick={() => viewNotes(lecture)}>
+                            <div className="lecture-card-header">
+                                <h3>{lecture.title}</h3>
+                                <StatusBadge status={lecture.status} />
+                            </div>
+                            <div className="lecture-card-date">
+                                {new Date(lecture.createdAt).toLocaleDateString("en-US", {
+                                    month: "short", day: "numeric", year: "numeric",
+                                    hour: "2-digit", minute: "2-digit"
+                                })}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ==================== SEARCH PAGE ====================
+function SearchPage({ token, showToast }) {
+    const [query, setQuery] = React.useState("");
+    const [result, setResult] = React.useState(null);
+    const [loading, setLoading] = React.useState(false);
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        if (!query.trim()) return;
+
+        setLoading(true);
+        setResult(null);
+
+        try {
+            const data = await apiCall("/study/search", {
+                method: "POST",
+                body: JSON.stringify({ query })
+            }, token);
+            setResult(data);
+        } catch (err) {
+            showToast("Search failed: " + err.message, "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div style={{animation: "fadeInUp 0.3s ease-out"}}>
+            <div className="page-header">
+                <h2>Semantic Search</h2>
+                <p>Ask questions about your lecture content and get AI-powered answers</p>
+            </div>
+
+            <form onSubmit={handleSearch}>
+                <div className="search-container">
+                    <span className="search-icon">🔍</span>
+                    <input 
+                        id="search-query"
+                        className="search-input"
+                        type="text"
+                        placeholder="e.g., What are the key differences between derivatives and integrals?"
+                        value={query}
+                        onChange={e => setQuery(e.target.value)}
+                    />
+                </div>
+                <button 
+                    id="search-submit"
+                    type="submit" 
+                    className="btn btn-primary btn-full" 
+                    style={{marginTop:"1rem"}}
+                    disabled={loading || !query.trim()}>
+                    {loading ? (
+                        <><span className="spinner" style={{width:16,height:16,borderWidth:2}}/> Searching...</>
+                    ) : (
+                        "Search Lectures"
+                    )}
+                </button>
+            </form>
+
+            {loading && (
+                <div className="loading" style={{marginTop:"2rem"}}>
+                    <span className="spinner" /> Searching across your lectures...
+                </div>
+            )}
+
+            {result && (
+                <div style={{animation: "fadeInUp 0.3s ease-out"}}>
+                    <div className="result-answer">
+                        <div className="result-answer-label">✨ AI Answer</div>
+                        <div style={{whiteSpace:"pre-wrap",lineHeight:"1.7"}}>{result.answer}</div>
+                    </div>
+
+                    {result.sources && result.sources.length > 0 && (
+                        <div className="result-sources">
+                            <div className="result-sources-label">📚 Source Chunks ({result.sources.length})</div>
+                            {result.sources.map((source, i) => (
+                                <div key={i} className="source-card">
+                                    <div className="source-card-label">Chunk #{source.chunkIndex}</div>
+                                    <div className="source-card-text">{source.text}</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {!loading && !result && (
+                <div className="empty-state" style={{marginTop:"2rem"}}>
+                    <div className="empty-state-icon">🧠</div>
+                    <div className="empty-state-title">Ask anything about your lectures</div>
+                    <div className="empty-state-text">
+                        Semantic search uses AI to understand the meaning behind your questions<br/>
+                        and find the most relevant content from your uploaded lectures.
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ==================== STATUS BADGE ====================
+function StatusBadge({ status }) {
+    const statusMap = {
+        PENDING: { cls: "badge-pending", label: "Pending" },
+        TRANSCRIBING: { cls: "badge-transcribing", label: "Transcribing" },
+        COMPLETED: { cls: "badge-completed", label: "Completed" },
+        FAILED: { cls: "badge-failed", label: "Failed" },
+    };
+
+    const s = statusMap[status] || statusMap.PENDING;
+
+    return (
+        <span className={`badge ${s.cls}`}>
+            <span className="badge-dot"></span>
+            {s.label}
+        </span>
+    );
+}
+
+// ==================== TOAST ====================
+function Toast({ toast }) {
+    if (!toast) return null;
+    return (
+        <div className={`toast toast-${toast.type}`}>
+            {toast.type === "success" ? "✓ " : "✕ "}
+            {toast.message}
+        </div>
+    );
+}
+
+// ==================== APP ====================
+function App() {
+    const auth = useAuth();
+    const { toast, show: showToast } = useToast();
+    const [page, setPage] = React.useState("dashboard");
+
+    if (!auth.isAuthenticated) {
+        return (
+            <>
+                <AuthPage onLogin={auth.login} />
+                <Toast toast={toast} />
+            </>
+        );
+    }
+
+    return (
+        <>
+            <nav className="nav">
+                <div className="nav-inner">
+                    <span className="nav-brand">PaathAI</span>
+                    <div className="nav-links">
+                        <button 
+                            className={`nav-link ${page === "dashboard" ? "active" : ""}`}
+                            onClick={() => setPage("dashboard")}>
+                            📚 Dashboard
+                        </button>
+                        <button 
+                            className={`nav-link ${page === "search" ? "active" : ""}`}
+                            onClick={() => setPage("search")}>
+                            🔍 Search
+                        </button>
+                        <button 
+                            className="nav-link logout"
+                            onClick={auth.logout}>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <main className="main">
+                {page === "dashboard" && (
+                    <Dashboard token={auth.token} showToast={showToast} />
+                )}
+                {page === "search" && (
+                    <SearchPage token={auth.token} showToast={showToast} />
+                )}
+            </main>
+
+            <Toast toast={toast} />
+        </>
+    );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
