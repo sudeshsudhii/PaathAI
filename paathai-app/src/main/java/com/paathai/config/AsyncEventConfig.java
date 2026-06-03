@@ -36,6 +36,21 @@ public class AsyncEventConfig {
         return buildExecutor("event-", 2, 8, 100);
     }
 
+    @Bean("liveTranscriptionExecutor")
+    public Executor liveTranscriptionExecutor() {
+        return buildExecutor("live-transcribe-", 4, 8, 100);
+    }
+
+    @Bean("liveProcessingExecutor")
+    public Executor liveProcessingExecutor() {
+        return buildExecutor("live-process-", 2, 4, 50);
+    }
+
+    @Bean("academicIntelligenceExecutor")
+    public Executor academicIntelligenceExecutor() {
+        return buildExecutor("acad-intel-", 1, 2, 25);
+    }
+
     private Executor buildExecutor(String prefix, int coreSize, int maxSize, int queueCapacity) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(coreSize);

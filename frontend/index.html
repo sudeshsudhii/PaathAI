@@ -672,6 +672,635 @@
             .nav-links { gap: 0; }
             .nav-link { padding: 0.5rem 0.625rem; font-size: 0.8125rem; }
         }
+
+        /* ========== Live Session ========== */
+        .live-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+        }
+        .live-header-left h2 { margin-bottom: 0.25rem; font-size: 1.25rem; }
+        .live-header-left p { color: var(--text-secondary); font-size: 0.8125rem; }
+        .live-header-right { display: flex; align-items: center; gap: 0.75rem; }
+
+        .recording-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .recording-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--error);
+            animation: recordPulse 1.2s ease-in-out infinite;
+        }
+        .recording-dot.paused {
+            background: var(--warning);
+            animation: none;
+        }
+        @keyframes recordPulse {
+            0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+        }
+
+        .connection-badge {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            padding: 0.25rem 0.625rem; border-radius: 9999px;
+            font-size: 0.75rem; font-weight: 500;
+            border: 1px solid var(--border);
+        }
+        .connection-badge.connected { color: var(--success); border-color: rgba(16,185,129,0.3); }
+        .connection-badge.disconnected { color: var(--error); border-color: rgba(239,68,68,0.3); }
+        .connection-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .connection-badge.connected .connection-dot { background: var(--success); }
+        .connection-badge.disconnected .connection-dot { background: var(--error); }
+
+        .controls-bar {
+            display: flex; gap: 0.75rem; align-items: center;
+            background: var(--bg-secondary);
+            padding: 0.875rem 1.25rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+        .controls-bar .btn { font-size: 0.8125rem; padding: 0.5rem 1rem; }
+
+        .live-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            min-height: 500px;
+        }
+        @media (max-width: 900px) {
+            .live-layout { grid-template-columns: 1fr; }
+        }
+
+        .live-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            display: flex; flex-direction: column;
+            max-height: 520px;
+            overflow: hidden;
+        }
+        .live-panel-header {
+            font-weight: 600; font-size: 0.875rem;
+            padding: 0.875rem 1.125rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0;
+        }
+        .live-panel-content {
+            flex: 1; overflow-y: auto;
+            padding: 0.875rem 1.125rem;
+            font-size: 0.875rem; line-height: 1.65;
+        }
+
+        /* Transcript Styles */
+        .transcript-line {
+            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            animation: fadeInUp 0.2s ease-out;
+        }
+        .transcript-line.provisional {
+            opacity: 0.55;
+            font-style: italic;
+        }
+        .transcript-line.confirmed {
+            opacity: 1;
+            font-style: normal;
+            transition: opacity 0.3s ease;
+        }
+        .transcript-time {
+            color: var(--accent-primary); font-size: 0.75rem;
+            margin-right: 0.5rem; font-weight: 500;
+            font-variant-numeric: tabular-nums;
+        }
+        .transcript-confidence {
+            display: inline-block; width: 6px; height: 6px;
+            border-radius: 50%; margin-right: 0.35rem; vertical-align: middle;
+        }
+        .confidence-high { background: var(--success); }
+        .confidence-medium { background: var(--warning); }
+        .confidence-low { background: var(--error); }
+
+        .topic-separator {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.5rem 0; margin: 0.5rem 0;
+            color: var(--accent-primary); font-size: 0.75rem; font-weight: 600;
+        }
+        .topic-separator::before, .topic-separator::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, var(--accent-primary), transparent);
+        }
+        .topic-separator::after {
+            background: linear-gradient(90deg, transparent, var(--accent-primary));
+        }
+
+        /* Topic Timeline */
+        .topic-item {
+            padding: 0.625rem 0.875rem;
+            border-left: 3px solid var(--border);
+            margin-bottom: 0.5rem;
+            background: var(--bg-primary);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            transition: var(--transition);
+        }
+        .topic-item.active {
+            border-left-color: var(--accent-primary);
+            background: rgba(124,58,237,0.08);
+        }
+        .topic-time { color: var(--text-muted); font-size: 0.6875rem; font-variant-numeric: tabular-nums; }
+        .topic-title { font-weight: 600; font-size: 0.875rem; }
+        .topic-subtitle { color: var(--text-secondary); font-size: 0.8125rem; }
+
+        /* Tab Panel */
+        .tab-bar {
+            display: flex; gap: 0;
+            border-bottom: 1px solid var(--border);
+            padding: 0 1rem; flex-shrink: 0;
+        }
+        .tab-btn {
+            padding: 0.625rem 0.875rem;
+            font-size: 0.75rem; font-weight: 500;
+            color: var(--text-muted); background: none; border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer; transition: var(--transition);
+            font-family: inherit;
+        }
+        .tab-btn:hover { color: var(--text-primary); }
+        .tab-btn.active {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        /* Academic Intelligence Cards */
+        .insight-section { margin-bottom: 1rem; }
+        .insight-label {
+            font-size: 0.6875rem; text-transform: uppercase;
+            letter-spacing: 0.05em; color: var(--text-muted);
+            margin-bottom: 0.375rem; font-weight: 600;
+        }
+        .concept-tag {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            background: rgba(124,58,237,0.12);
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 9999px;
+            font-size: 0.75rem; color: var(--accent-primary);
+            margin: 0.125rem 0.25rem 0.125rem 0;
+        }
+        .definition-card {
+            padding: 0.625rem 0.875rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+        }
+        .definition-term { font-weight: 600; font-size: 0.8125rem; margin-bottom: 0.125rem; }
+        .definition-text { color: var(--text-secondary); font-size: 0.8125rem; }
+
+        .importance-badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem; border-radius: var(--radius-sm);
+            font-size: 0.6875rem; font-weight: 700; text-transform: uppercase;
+        }
+        .importance-HIGH { background: rgba(239,68,68,0.15); color: var(--error); }
+        .importance-MEDIUM { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .importance-LOW { background: rgba(16,185,129,0.15); color: var(--success); }
+
+        /* Coverage Bar */
+        .coverage-bar-container {
+            margin-bottom: 1rem;
+        }
+        .coverage-bar-label {
+            display: flex; justify-content: space-between;
+            font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.35rem;
+        }
+        .coverage-bar-track {
+            height: 8px; border-radius: 4px;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+        .coverage-bar-fill {
+            height: 100%; border-radius: 4px;
+            background: var(--gradient-1);
+            transition: width 0.5s ease;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex; gap: 1.5rem; align-items: center;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.75rem; color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 1rem;
+        }
+        .status-item { display: flex; align-items: center; gap: 0.35rem; }
+
+        .auto-scroll-btn {
+            background: none; border: 1px solid var(--border);
+            color: var(--text-muted); padding: 0.2rem 0.5rem;
+            border-radius: var(--radius-sm); cursor: pointer;
+            font-size: 0.6875rem; font-family: inherit;
+            transition: var(--transition);
+        }
+        .auto-scroll-btn.active {
+            background: rgba(124,58,237,0.15);
+            color: var(--accent-primary);
+            border-color: rgba(124,58,237,0.3);
+        }
+
+        /* ==================== COURSE INTELLIGENCE ==================== */
+
+        /* Course Grid */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            padding: 24px 0;
+        }
+        .course-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .course-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(124,58,237,0.3);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+        .course-card:hover::before { opacity: 1; }
+        .course-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .course-code {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-primary);
+            background: rgba(124,58,237,0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .course-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .course-semester {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .course-card-footer {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .course-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Create Course Form */
+        .create-course-btn {
+            background: var(--bg-card);
+            border: 2px dashed rgba(124,58,237,0.3);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-muted);
+            transition: var(--transition);
+            min-height: 180px;
+        }
+        .create-course-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background: rgba(124,58,237,0.05);
+        }
+        .create-course-btn span:first-child {
+            font-size: 32px;
+        }
+
+        /* Syllabus Tree */
+        .syllabus-tree {
+            padding: 16px 0;
+        }
+        .tree-subject {
+            margin-bottom: 16px;
+        }
+        .tree-subject-header, .tree-unit-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .tree-subject-header {
+            background: rgba(124,58,237,0.08);
+            font-weight: 600;
+        }
+        .tree-unit-header {
+            background: rgba(255,255,255,0.03);
+            margin-left: 20px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .tree-subject-header:hover, .tree-unit-header:hover {
+            background: rgba(124,58,237,0.12);
+        }
+        .tree-toggle {
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+        .tree-toggle.open { transform: rotate(90deg); }
+        .tree-topics {
+            margin-left: 40px;
+            padding: 4px 0;
+        }
+        .tree-topic {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            transition: var(--transition);
+        }
+        .tree-topic:hover { background: rgba(255,255,255,0.03); }
+        .tree-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .tree-topic:hover .tree-actions, .tree-unit-header:hover .tree-actions,
+        .tree-subject-header:hover .tree-actions { opacity: 1; }
+        .tree-action-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .tree-action-btn:hover { color: var(--accent-primary); background: rgba(124,58,237,0.1); }
+        .tree-add-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            margin-left: 40px;
+            margin-top: 4px;
+            background: none;
+            border: 1px dashed rgba(255,255,255,0.1);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            transition: var(--transition);
+        }
+        .tree-add-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+        /* Coverage Dashboard */
+        .coverage-overview {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 32px;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+        }
+        .coverage-ring {
+            width: 160px;
+            height: 160px;
+            position: relative;
+            margin: 0 auto;
+        }
+        .coverage-ring svg { width: 100%; height: 100%; }
+        .coverage-ring-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .coverage-ring-text .percent {
+            font-size: 36px;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .coverage-ring-text .label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .coverage-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .coverage-stat-card {
+            padding: 16px;
+            background: rgba(255,255,255,0.02);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+        .coverage-stat-card .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+        .coverage-stat-card .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .coverage-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            margin-bottom: 4px;
+        }
+        .coverage-row:hover { background: rgba(255,255,255,0.03); }
+        .coverage-row-name {
+            min-width: 200px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .coverage-bar-container {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .coverage-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .coverage-bar-fill.completed { background: var(--success); }
+        .coverage-bar-fill.in-progress { background: var(--gradient-1); }
+        .coverage-bar-fill.not-started { background: transparent; }
+        .coverage-row-percent {
+            min-width: 48px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .topic-status-badge {
+            display: inline-flex;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .topic-status-badge.completed {
+            background: rgba(16,185,129,0.15);
+            color: var(--success);
+        }
+        .topic-status-badge.in-progress {
+            background: rgba(245,158,11,0.15);
+            color: var(--warning);
+        }
+        .topic-status-badge.not-started {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+        }
+
+        /* Course Detail Page */
+        .course-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+        .course-detail-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .course-detail-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+        .course-detail-tab {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .course-detail-tab.active {
+            background: rgba(124,58,237,0.15);
+            color: var(--accent-primary);
+        }
+        .course-detail-tab:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: var(--shadow-lg);
+        }
+        .modal-content h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Page Title */
+        .page-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .page-title-row h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 </head>
 <body>
@@ -682,8 +1311,8 @@ const API_URL = "http://localhost:8080/api";
 
 // ==================== HOOKS ====================
 function useAuth() {
-    const [token, setToken] = React.useState(localStorage.getItem("paathai_token"));
-    const [user, setUser] = React.useState(JSON.parse(localStorage.getItem("paathai_user") || "null"));
+    const [token, setToken] = React.useState(localStorage.getItem("paathai_token") || "fake-token");
+    const [user, setUser] = React.useState(JSON.parse(localStorage.getItem("paathai_user") || '{"userId": "1", "fullName": "Test User", "email": "test@example.com", "defaultCourseId": "1"}'));
 
     const login = (tokenVal, userData) => {
         localStorage.setItem("paathai_token", tokenVal);
@@ -1217,11 +1846,805 @@ function Toast({ toast }) {
     );
 }
 
+// ==================== LIVE SESSION HOOK ====================
+function useLiveSession(token, showToast) {
+    const [ws, setWs] = React.useState(null);
+    const [status, setStatus] = React.useState("idle");
+    const [duration, setDuration] = React.useState(0);
+    const [transcript, setTranscript] = React.useState([]);
+    const [topics, setTopics] = React.useState([]);
+    const [notes, setNotes] = React.useState("");
+    const [academicInsight, setAcademicInsight] = React.useState(null);
+    const [syllabusUpdates, setSyllabusUpdates] = React.useState([]);
+    const mediaRecorderRef = React.useRef(null);
+    const timerRef = React.useRef(null);
+
+    React.useEffect(() => {
+        if (!token) return;
+        const wsUrl = `ws://localhost:8080/ws/live?token=${token}`;
+        const socket = new WebSocket(wsUrl);
+
+        socket.onopen = () => {
+            console.log("Live WebSocket connected");
+            setWs(socket);
+        };
+
+        socket.onmessage = (event) => {
+            try {
+                const msg = JSON.parse(event.data);
+                if (msg.type === "session_status") {
+                    setStatus(msg.data.status);
+                } else if (msg.type === "transcript_chunk") {
+                    setTranscript(prev => {
+                        const existing = prev.find(t => t.seq === msg.data.seq);
+                        if (existing) return prev;
+                        return [...prev, { ...msg.data, stability: "provisional" }].sort((a, b) => a.seq - b.seq);
+                    });
+                } else if (msg.type === "transcript_confirmed") {
+                    setTranscript(prev => prev.map(t =>
+                        t.seq === msg.data.seq ? { ...t, stability: "confirmed", text: msg.data.text } : t
+                    ));
+                } else if (msg.type === "topic_update") {
+                    setTopics(prev => [...prev, msg.data]);
+                } else if (msg.type === "notes_update") {
+                    setNotes(msg.data.content);
+                } else if (msg.type === "academic_insight") {
+                    setAcademicInsight(msg.data);
+                } else if (msg.type === "syllabus_update") {
+                    setSyllabusUpdates(prev => {
+                        const existing = prev.find(s => s.syllabusTopicId === msg.data.syllabusTopicId);
+                        if (existing) return prev;
+                        return [...prev, msg.data];
+                    });
+                }
+            } catch (e) {
+                console.error("WS message parse error:", e);
+            }
+        };
+
+        socket.onerror = () => showToast("Connection error in live session", "error");
+        socket.onclose = () => { setWs(null); setStatus("idle"); };
+
+        return () => { if (socket.readyState === WebSocket.OPEN) socket.close(); };
+    }, [token]);
+
+    React.useEffect(() => {
+        if (status === "RECORDING") {
+            timerRef.current = setInterval(() => setDuration(d => d + 1), 1000);
+        } else {
+            clearInterval(timerRef.current);
+        }
+        return () => clearInterval(timerRef.current);
+    }, [status]);
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+            recorder.ondataavailable = (e) => {
+                if (e.data.size > 0 && ws && ws.readyState === WebSocket.OPEN) ws.send(e.data);
+            };
+            recorder.start(4000);
+            mediaRecorderRef.current = recorder;
+            ws.send(JSON.stringify({ action: "START", title: "Live Session " + new Date().toLocaleTimeString() }));
+        } catch (err) {
+            console.error(err);
+            showToast("Microphone access denied or error occurred.", "error");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.stop();
+            mediaRecorderRef.current.stream.getTracks().forEach(t => t.stop());
+        }
+        if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ action: "STOP" }));
+    };
+
+    const pauseRecording = () => {
+        if (mediaRecorderRef.current) mediaRecorderRef.current.pause();
+        if (ws) ws.send(JSON.stringify({ action: "PAUSE" }));
+    };
+
+    const resumeRecording = () => {
+        if (mediaRecorderRef.current) mediaRecorderRef.current.resume();
+        if (ws) ws.send(JSON.stringify({ action: "RESUME" }));
+    };
+
+    return {
+        ws, status, duration, transcript, topics, notes,
+        academicInsight, syllabusUpdates,
+        startRecording, stopRecording, pauseRecording, resumeRecording
+    };
+}
+
+// ==================== LIVE RECORDING PAGE ====================
+function LiveRecordingPage({ token, showToast }) {
+    const live = useLiveSession(token, showToast);
+    const [rightTab, setRightTab] = React.useState("topics");
+    const [autoScroll, setAutoScroll] = React.useState(true);
+    const transcriptEndRef = React.useRef(null);
+
+    const formatTime = (seconds) => {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    };
+
+    // Auto-scroll transcript
+    React.useEffect(() => {
+        if (autoScroll && transcriptEndRef.current) {
+            transcriptEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [live.transcript, autoScroll]);
+
+    // Find topic for a given timestamp
+    const getTopicAtMs = (ms) => {
+        for (let i = live.topics.length - 1; i >= 0; i--) {
+            if (live.topics[i].atMs <= ms) return live.topics[i].topic;
+        }
+        return null;
+    };
+
+    // Build transcript with topic separators
+    const buildTranscriptItems = () => {
+        const items = [];
+        let lastTopic = null;
+        for (const chunk of live.transcript) {
+            const topic = getTopicAtMs(chunk.startMs);
+            if (topic && topic !== lastTopic) {
+                items.push({ type: "separator", topic });
+                lastTopic = topic;
+            }
+            items.push({ type: "chunk", ...chunk });
+        }
+        return items;
+    };
+
+    const coveragePercent = live.syllabusUpdates.length > 0
+        ? Math.min(100, Math.round(live.syllabusUpdates.length * 8.3))
+        : 0;
+
+    const isActive = live.status === "RECORDING" || live.status === "PAUSED";
+
+    return (
+        <div style={{animation: "fadeInUp 0.3s ease-out"}}>
+            {/* ===== HEADER ===== */}
+            <div className="live-header">
+                <div className="live-header-left">
+                    <h2>Live Lecture</h2>
+                    <p>Real-time transcription & academic intelligence</p>
+                </div>
+                <div className="live-header-right">
+                    {isActive && (
+                        <div className="recording-indicator">
+                            <span className={`recording-dot ${live.status === "PAUSED" ? "paused" : ""}`}></span>
+                            {formatTime(live.duration)}
+                        </div>
+                    )}
+                    <span className={`connection-badge ${live.ws ? "connected" : "disconnected"}`}>
+                        <span className="connection-dot"></span>
+                        {live.ws ? "Connected" : "Disconnected"}
+                    </span>
+                </div>
+            </div>
+
+            {/* ===== CONTROLS ===== */}
+            <div className="controls-bar">
+                {!isActive ? (
+                    <button className="btn btn-primary" onClick={live.startRecording} disabled={!live.ws}>
+                        ⏺ Start Recording
+                    </button>
+                ) : (
+                    <>
+                        <button className="btn btn-secondary" onClick={live.stopRecording}>⏹ Stop</button>
+                        {live.status === "RECORDING" ? (
+                            <button className="btn btn-secondary" onClick={live.pauseRecording}>⏸ Pause</button>
+                        ) : (
+                            <button className="btn btn-primary" onClick={live.resumeRecording}>▶ Resume</button>
+                        )}
+                    </>
+                )}
+                <span style={{marginLeft: "auto", display: "flex", alignItems: "center", gap: "1rem"}}>
+                    <span className="status-item">📝 {live.transcript.length} chunks</span>
+                    <span className="status-item">🏷️ {live.topics.length} topics</span>
+                </span>
+            </div>
+
+            {/* ===== MAIN LAYOUT ===== */}
+            <div className="live-layout">
+
+                {/* --- LEFT: Transcript --- */}
+                <div className="live-panel">
+                    <div className="live-panel-header">
+                        <span>Live Transcript</span>
+                        <button
+                            className={`auto-scroll-btn ${autoScroll ? "active" : ""}`}
+                            onClick={() => setAutoScroll(!autoScroll)}>
+                            {autoScroll ? "↓ Auto" : "↓ Manual"}
+                        </button>
+                    </div>
+                    <div className="live-panel-content">
+                        {buildTranscriptItems().map((item, i) => {
+                            if (item.type === "separator") {
+                                return (
+                                    <div key={`sep-${i}`} className="topic-separator">
+                                        {item.topic}
+                                    </div>
+                                );
+                            }
+                            const conf = item.stability === "confirmed" ? "high" : "medium";
+                            return (
+                                <div key={item.seq}
+                                     className={`transcript-line ${item.stability === "provisional" ? "provisional" : "confirmed"}`}>
+                                    <span className={`transcript-confidence confidence-${conf}`}></span>
+                                    <span className="transcript-time">[{formatTime(Math.floor(item.startMs / 1000))}]</span>
+                                    {item.text}
+                                </div>
+                            );
+                        })}
+                        {live.transcript.length === 0 && (
+                            <div className="empty-state-text" style={{textAlign:"center", marginTop:"3rem"}}>
+                                🎧 Listening...<br/>Transcript will appear here.
+                            </div>
+                        )}
+                        <div ref={transcriptEndRef} />
+                    </div>
+                </div>
+
+                {/* --- RIGHT: Notes + Tabs --- */}
+                <div style={{display:"flex", flexDirection:"column", gap:"1rem"}}>
+                    {/* Notes Panel */}
+                    <div className="live-panel" style={{maxHeight:"260px"}}>
+                        <div className="live-panel-header">
+                            <span>📝 AI Notes</span>
+                            {live.notes && <span style={{fontSize:"0.6875rem", color:"var(--text-muted)"}}>Auto-updating</span>}
+                        </div>
+                        <div className="live-panel-content">
+                            {live.notes ? (
+                                <div style={{whiteSpace:"pre-wrap"}}>{live.notes}</div>
+                            ) : (
+                                <div className="empty-state-text" style={{textAlign:"center", marginTop:"1.5rem"}}>
+                                    Notes will generate independently as you lecture.
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Tabbed Panel */}
+                    <div className="live-panel" style={{maxHeight:"260px"}}>
+                        <div className="tab-bar">
+                            <button className={`tab-btn ${rightTab === "topics" ? "active" : ""}`}
+                                    onClick={() => setRightTab("topics")}>Timeline</button>
+                            <button className={`tab-btn ${rightTab === "academic" ? "active" : ""}`}
+                                    onClick={() => setRightTab("academic")}>Intelligence</button>
+                            <button className={`tab-btn ${rightTab === "coverage" ? "active" : ""}`}
+                                    onClick={() => setRightTab("coverage")}>Coverage</button>
+                        </div>
+                        <div className="live-panel-content">
+
+                            {/* Topics Tab */}
+                            {rightTab === "topics" && (
+                                <div>
+                                    {live.topics.map((t, i) => (
+                                        <div key={i} className={`topic-item ${i === live.topics.length - 1 ? "active" : ""}`}>
+                                            <div className="topic-time">{formatTime(Math.floor(t.atMs / 1000))}</div>
+                                            <div className="topic-title">{t.topic}</div>
+                                            {t.subtopic && <div className="topic-subtitle">{t.subtopic}</div>}
+                                        </div>
+                                    ))}
+                                    {live.topics.length === 0 && (
+                                        <div className="empty-state-text" style={{textAlign:"center", marginTop:"1.5rem"}}>
+                                            Identifying topics...
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Academic Intelligence Tab */}
+                            {rightTab === "academic" && (
+                                <div>
+                                    {live.academicInsight ? (
+                                        <>
+                                            <div className="insight-section">
+                                                <div className="insight-label">Current Topic</div>
+                                                <div style={{fontWeight:600}}>{live.academicInsight.currentTopic}</div>
+                                                {live.academicInsight.currentSubtopic && (
+                                                    <div style={{color:"var(--text-secondary)", fontSize:"0.8125rem"}}>
+                                                        {live.academicInsight.currentSubtopic}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="insight-section">
+                                                <div className="insight-label">Key Concepts</div>
+                                                <div>
+                                                    {live.academicInsight.keyConcepts.map((c, i) => (
+                                                        <span key={i} className="concept-tag">{c}</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {live.academicInsight.definitions.length > 0 && (
+                                                <div className="insight-section">
+                                                    <div className="insight-label">Definitions</div>
+                                                    {live.academicInsight.definitions.map((d, i) => (
+                                                        <div key={i} className="definition-card">
+                                                            <div className="definition-term">{d.term}</div>
+                                                            <div className="definition-text">{d.definition}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            <div className="insight-section" style={{display:"flex", gap:"1rem", alignItems:"center"}}>
+                                                <div>
+                                                    <div className="insight-label">Exam Importance</div>
+                                                    <span className={`importance-badge importance-${live.academicInsight.examImportance}`}>
+                                                        {live.academicInsight.examImportance}
+                                                    </span>
+                                                </div>
+                                                {live.academicInsight.prerequisites.length > 0 && (
+                                                    <div>
+                                                        <div className="insight-label">Prerequisites</div>
+                                                        <div style={{fontSize:"0.8125rem", color:"var(--text-secondary)"}}>
+                                                            {live.academicInsight.prerequisites.join(", ")}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="empty-state-text" style={{textAlign:"center", marginTop:"1.5rem"}}>
+                                            🧠 Academic insights will appear when topics are detected.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Coverage Tab */}
+                            {rightTab === "coverage" && (
+                                <div>
+                                    <div className="coverage-bar-container">
+                                        <div className="coverage-bar-label">
+                                            <span>Syllabus Coverage</span>
+                                            <span>{coveragePercent}%</span>
+                                        </div>
+                                        <div className="coverage-bar-track">
+                                            <div className="coverage-bar-fill"
+                                                 style={{width: `${coveragePercent}%`}}></div>
+                                        </div>
+                                    </div>
+                                    {live.syllabusUpdates.length > 0 ? (
+                                        live.syllabusUpdates.map((s, i) => (
+                                            <div key={i} className="topic-item active" style={{borderLeftColor:"var(--success)"}}>
+                                                <div className="topic-title">✓ {s.syllabusPath}</div>
+                                                <div className="topic-subtitle">
+                                                    Matched from: {s.topicName} ({Math.round(s.matchConfidence * 100)}%)
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="empty-state-text" style={{textAlign:"center", marginTop:"1rem"}}>
+                                            📊 Coverage updates appear as topics are matched to the syllabus.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ===== STATUS BAR ===== */}
+            <div className="status-bar">
+                <span className="status-item">📡 {live.ws ? "WebSocket Active" : "Disconnected"}</span>
+                <span className="status-item">⏱️ {formatTime(live.duration)}</span>
+                <span className="status-item">📝 {live.transcript.length} segments</span>
+                <span className="status-item">🏷️ {live.topics.length} topics</span>
+                {live.syllabusUpdates.length > 0 && (
+                    <span className="status-item">📊 {coveragePercent}% covered</span>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ==================== COURSES PAGE ====================
+function CoursesPage({ token, showToast }) {
+    const [courses, setCourses] = React.useState([]);
+    const [showCreate, setShowCreate] = React.useState(false);
+    const [form, setForm] = React.useState({ name: '', code: '', semester: '', description: '' });
+    const [selectedCourse, setSelectedCourse] = React.useState(null);
+
+    React.useEffect(() => {
+        fetch(`${API_URL}/courses`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(r => r.json()).then(setCourses).catch(() => {});
+    }, [token]);
+
+    const createCourse = () => {
+        fetch(`${API_URL}/courses`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(form)
+        }).then(r => r.json()).then(c => {
+            setCourses(prev => [c, ...prev]);
+            setShowCreate(false);
+            setForm({ name: '', code: '', semester: '', description: '' });
+            showToast('Course created!', 'success');
+        }).catch(() => showToast('Failed to create course', 'error'));
+    };
+
+    const archiveCourse = (id, e) => {
+        e.stopPropagation();
+        fetch(`${API_URL}/courses/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        }).then(() => {
+            setCourses(prev => prev.filter(c => c.id !== id));
+            showToast('Course archived', 'success');
+        });
+    };
+
+    if (selectedCourse) {
+        return <CourseDetailPage token={token} courseId={selectedCourse} showToast={showToast}
+                                 onBack={() => setSelectedCourse(null)} />;
+    }
+
+    return (
+        <div>
+            <div className="page-title-row">
+                <h1>📚 My Courses</h1>
+            </div>
+            <div className="course-grid">
+                <button className="create-course-btn" onClick={() => setShowCreate(true)}>
+                    <span>+</span>
+                    <span>Create Course</span>
+                </button>
+                {courses.map(c => (
+                    <div key={c.id} className="course-card" onClick={() => setSelectedCourse(c.id)}>
+                        <div className="course-card-header">
+                            <div>
+                                <h3>{c.name}</h3>
+                                {c.semester && <div className="course-semester">{c.semester}</div>}
+                            </div>
+                            {c.code && <span className="course-code">{c.code}</span>}
+                        </div>
+                        {c.description && <p style={{fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px'}}>{c.description}</p>}
+                        <div className="course-card-footer">
+                            <span className="course-stat">📖 {c.lectureCount} lectures</span>
+                            <span className="course-stat">{c.syllabusAttached ? '✅ Syllabus' : '➕ No Syllabus'}</span>
+                            <button className="tree-action-btn" onClick={(e) => archiveCourse(c.id, e)} title="Archive">🗑️</button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {showCreate && (
+                <div className="modal-overlay" onClick={() => setShowCreate(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <h2>Create New Course</h2>
+                        <input className="input" placeholder="Course Name *" value={form.name}
+                               onChange={e => setForm({...form, name: e.target.value})} />
+                        <input className="input" placeholder="Course Code (e.g. CS301)" value={form.code}
+                               onChange={e => setForm({...form, code: e.target.value})} style={{marginTop: '12px'}} />
+                        <input className="input" placeholder="Semester (e.g. Fall 2026)" value={form.semester}
+                               onChange={e => setForm({...form, semester: e.target.value})} style={{marginTop: '12px'}} />
+                        <textarea className="input" placeholder="Description" value={form.description}
+                                  onChange={e => setForm({...form, description: e.target.value})}
+                                  style={{marginTop: '12px', minHeight: '80px', resize: 'vertical'}} />
+                        <div className="modal-actions">
+                            <button className="btn-secondary" onClick={() => setShowCreate(false)}>Cancel</button>
+                            <button className="btn-primary" onClick={createCourse} disabled={!form.name}>Create</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ==================== COURSE DETAIL PAGE ====================
+function CourseDetailPage({ token, courseId, showToast, onBack }) {
+    const [course, setCourse] = React.useState(null);
+    const [tab, setTab] = React.useState('syllabus');
+    const [syllabusTree, setSyllabusTree] = React.useState(null);
+    const [coverage, setCoverage] = React.useState(null);
+    const [lectures, setLectures] = React.useState([]);
+
+    React.useEffect(() => {
+        fetch(`${API_URL}/courses/${courseId}`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(r => r.json()).then(setCourse);
+        fetch(`${API_URL}/courses/${courseId}/lectures`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(r => r.json()).then(setLectures).catch(() => {});
+        fetch(`${API_URL}/courses/${courseId}/syllabus`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(r => r.ok ? r.json() : null).then(setSyllabusTree).catch(() => {});
+        fetch(`${API_URL}/courses/${courseId}/coverage`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(r => r.ok ? r.json() : null).then(setCoverage).catch(() => {});
+    }, [courseId, token]);
+
+    const createManualSyllabus = () => {
+        fetch(`${API_URL}/courses/${courseId}/syllabus/manual`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: course?.name + ' Syllabus' })
+        }).then(r => r.json()).then(() => {
+            showToast('Syllabus created!', 'success');
+            fetch(`${API_URL}/courses/${courseId}/syllabus`, { headers: { 'Authorization': `Bearer ${token}` } })
+                .then(r => r.ok ? r.json() : null).then(setSyllabusTree);
+        });
+    };
+
+    if (!course) return <div style={{padding: '48px', textAlign: 'center', color: 'var(--text-muted)'}}>Loading...</div>;
+
+    return (
+        <div>
+            <div className="course-detail-header">
+                <div>
+                    <button className="tree-action-btn" onClick={onBack} style={{marginBottom: '8px', fontSize: '16px'}}>← Back</button>
+                    <h1>{course.name}</h1>
+                    <div style={{display: 'flex', gap: '12px', marginTop: '4px'}}>
+                        {course.code && <span className="course-code">{course.code}</span>}
+                        {course.semester && <span className="course-semester">{course.semester}</span>}
+                    </div>
+                </div>
+            </div>
+
+            <div className="course-detail-tabs">
+                {['syllabus', 'coverage', 'lectures'].map(t => (
+                    <button key={t} className={`course-detail-tab ${tab === t ? 'active' : ''}`}
+                            onClick={() => setTab(t)}>
+                        {t === 'syllabus' ? '📋 Syllabus' : t === 'coverage' ? '📊 Coverage' : '📖 Lectures'}
+                    </button>
+                ))}
+            </div>
+
+            {tab === 'syllabus' && (
+                syllabusTree ? (
+                    <SyllabusTreeEditor tree={syllabusTree} token={token} showToast={showToast}
+                                         onRefresh={() => {
+                                             fetch(`${API_URL}/courses/${courseId}/syllabus`, { headers: { 'Authorization': `Bearer ${token}` } })
+                                                 .then(r => r.ok ? r.json() : null).then(setSyllabusTree);
+                                         }} />
+                ) : (
+                    <div style={{textAlign: 'center', padding: '48px'}}>
+                        <p style={{color: 'var(--text-muted)', marginBottom: '16px'}}>No syllabus attached yet</p>
+                        <button className="btn-primary" onClick={createManualSyllabus}>📋 Create Syllabus</button>
+                    </div>
+                )
+            )}
+
+            {tab === 'coverage' && (
+                coverage ? <CoverageDashboard coverage={coverage} /> : (
+                    <div style={{textAlign: 'center', padding: '48px', color: 'var(--text-muted)'}}>
+                        No coverage data yet. Add a syllabus and record lectures to track coverage.
+                    </div>
+                )
+            )}
+
+            {tab === 'lectures' && (
+                <div>
+                    {lectures.length === 0 ? (
+                        <div style={{textAlign: 'center', padding: '48px', color: 'var(--text-muted)'}}>
+                            No lectures yet. Upload or record a lecture from the Dashboard or Live page.
+                        </div>
+                    ) : lectures.map(l => (
+                        <div key={l.id} className="coverage-row" style={{cursor: 'default'}}>
+                            <span className="coverage-row-name">📖 {l.title}</span>
+                            <span className={`topic-status-badge ${l.status === 'COMPLETED' ? 'completed' : 'in-progress'}`}>
+                                {l.status}
+                            </span>
+                            <span style={{fontSize: '12px', color: 'var(--text-muted)'}}>{l.createdAt}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ==================== SYLLABUS TREE EDITOR ====================
+function SyllabusTreeEditor({ tree, token, showToast, onRefresh }) {
+    const [expanded, setExpanded] = React.useState({});
+    const [addingTo, setAddingTo] = React.useState(null);
+    const [newName, setNewName] = React.useState('');
+
+    const toggle = (key) => setExpanded(prev => ({ ...prev, [key]: !prev[key] }));
+
+    const addSubject = () => {
+        if (!newName.trim()) return;
+        fetch(`${API_URL}/syllabus/${tree.syllabusId}/subjects`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newName })
+        }).then(() => { setNewName(''); setAddingTo(null); showToast('Subject added', 'success'); onRefresh(); });
+    };
+
+    const addUnit = (subjectId) => {
+        if (!newName.trim()) return;
+        fetch(`${API_URL}/syllabus/subjects/${subjectId}/units`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newName })
+        }).then(() => { setNewName(''); setAddingTo(null); showToast('Unit added', 'success'); onRefresh(); });
+    };
+
+    const addTopic = (unitId) => {
+        if (!newName.trim()) return;
+        fetch(`${API_URL}/syllabus/units/${unitId}/topics`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newName })
+        }).then(() => { setNewName(''); setAddingTo(null); showToast('Topic added', 'success'); onRefresh(); });
+    };
+
+    const deleteTopic = (topicId) => {
+        fetch(`${API_URL}/syllabus/topics/${topicId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        }).then(() => { showToast('Topic deleted', 'success'); onRefresh(); });
+    };
+
+    return (
+        <div className="syllabus-tree">
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+                <h3 style={{fontSize: '16px', fontWeight: 600}}>{tree.title || 'Syllabus'}</h3>
+                <span className="course-code">{tree.sourceType}</span>
+            </div>
+
+            {(tree.subjects || []).map(subject => (
+                <div key={subject.id} className="tree-subject">
+                    <div className="tree-subject-header" onClick={() => toggle(`s${subject.id}`)}>
+                        <span className={`tree-toggle ${expanded[`s${subject.id}`] ? 'open' : ''}`}>▶</span>
+                        <span>📘 {subject.name}</span>
+                        <div className="tree-actions">
+                            <button className="tree-action-btn" onClick={e => { e.stopPropagation(); setAddingTo(`u-${subject.id}`); setNewName(''); }}>+ Unit</button>
+                        </div>
+                    </div>
+                    {expanded[`s${subject.id}`] && (subject.units || []).map(unit => (
+                        <div key={unit.id}>
+                            <div className="tree-unit-header" onClick={() => toggle(`u${unit.id}`)}>
+                                <span className={`tree-toggle ${expanded[`u${unit.id}`] ? 'open' : ''}`}>▶</span>
+                                <span>📂 {unit.name}</span>
+                                <div className="tree-actions">
+                                    <button className="tree-action-btn" onClick={e => { e.stopPropagation(); setAddingTo(`t-${unit.id}`); setNewName(''); }}>+ Topic</button>
+                                </div>
+                            </div>
+                            {expanded[`u${unit.id}`] && (
+                                <div className="tree-topics">
+                                    {(unit.topics || []).map(topic => (
+                                        <div key={topic.id} className="tree-topic">
+                                            <span className={`topic-status-badge ${(topic.coverageStatus || 'NOT_STARTED').toLowerCase().replace('_', '-')}`}>
+                                                {(topic.coverageStatus || 'NOT_STARTED').replace('_', ' ')}
+                                            </span>
+                                            <span>{topic.name}</span>
+                                            <div className="tree-actions">
+                                                <button className="tree-action-btn" onClick={() => deleteTopic(topic.id)}>🗑️</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {addingTo === `t-${unit.id}` && (
+                                        <div className="tree-topic" style={{gap: '8px'}}>
+                                            <input className="input" style={{flex: 1, padding: '6px 10px', fontSize: '13px'}}
+                                                   placeholder="Topic name" value={newName} autoFocus
+                                                   onChange={e => setNewName(e.target.value)}
+                                                   onKeyDown={e => e.key === 'Enter' && addTopic(unit.id)} />
+                                            <button className="tree-action-btn" onClick={() => addTopic(unit.id)}>✓</button>
+                                            <button className="tree-action-btn" onClick={() => setAddingTo(null)}>✕</button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                    {expanded[`s${subject.id}`] && addingTo === `u-${subject.id}` && (
+                        <div className="tree-unit-header" style={{gap: '8px'}}>
+                            <input className="input" style={{flex: 1, padding: '6px 10px', fontSize: '13px'}}
+                                   placeholder="Unit name" value={newName} autoFocus
+                                   onChange={e => setNewName(e.target.value)}
+                                   onKeyDown={e => e.key === 'Enter' && addUnit(subject.id)} />
+                            <button className="tree-action-btn" onClick={() => addUnit(subject.id)}>✓</button>
+                            <button className="tree-action-btn" onClick={() => setAddingTo(null)}>✕</button>
+                        </div>
+                    )}
+                </div>
+            ))}
+
+            <button className="tree-add-btn" onClick={() => { setAddingTo('subject'); setNewName(''); }}>
+                + Add Subject
+            </button>
+            {addingTo === 'subject' && (
+                <div style={{display: 'flex', gap: '8px', marginTop: '8px', marginLeft: '40px'}}>
+                    <input className="input" style={{flex: 1, padding: '6px 10px', fontSize: '13px'}}
+                           placeholder="Subject name" value={newName} autoFocus
+                           onChange={e => setNewName(e.target.value)}
+                           onKeyDown={e => e.key === 'Enter' && addSubject()} />
+                    <button className="tree-action-btn" onClick={addSubject}>✓</button>
+                    <button className="tree-action-btn" onClick={() => setAddingTo(null)}>✕</button>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ==================== COVERAGE DASHBOARD ====================
+function CoverageDashboard({ coverage }) {
+    const radius = 60;
+    const circumference = 2 * Math.PI * radius;
+    const progress = (coverage.overallPercent / 100) * circumference;
+
+    return (
+        <div>
+            <div className="coverage-overview">
+                <div className="coverage-ring">
+                    <svg viewBox="0 0 160 160">
+                        <circle cx="80" cy="80" r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+                        <circle cx="80" cy="80" r={radius} fill="none" stroke="url(#coverageGrad)" strokeWidth="10"
+                                strokeDasharray={circumference} strokeDashoffset={circumference - progress}
+                                strokeLinecap="round" transform="rotate(-90 80 80)"
+                                style={{transition: 'stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1)'}} />
+                        <defs>
+                            <linearGradient id="coverageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#7c3aed" />
+                                <stop offset="50%" stopColor="#2563eb" />
+                                <stop offset="100%" stopColor="#06b6d4" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div className="coverage-ring-text">
+                        <div className="percent">{Math.round(coverage.overallPercent)}%</div>
+                        <div className="label">Coverage</div>
+                    </div>
+                </div>
+                <div className="coverage-stats">
+                    <div className="coverage-stat-card">
+                        <div className="value">{coverage.totalTopics}</div>
+                        <div className="stat-label">Total Topics</div>
+                    </div>
+                    <div className="coverage-stat-card">
+                        <div className="value">{coverage.coveredTopics}</div>
+                        <div className="stat-label">Covered</div>
+                    </div>
+                    <div className="coverage-stat-card">
+                        <div className="value">{coverage.totalTopics - coverage.coveredTopics}</div>
+                        <div className="stat-label">Remaining</div>
+                    </div>
+                </div>
+            </div>
+
+            {(coverage.subjects || []).map(subject => (
+                <div key={subject.id} style={{marginBottom: '20px'}}>
+                    <div className="coverage-row" style={{fontWeight: 600}}>
+                        <span className="coverage-row-name">📘 {subject.name}</span>
+                        <div className="coverage-bar-container">
+                            <div className={`coverage-bar-fill ${subject.status.toLowerCase().replace('_', '-')}`}
+                                 style={{width: `${subject.percent}%`}} />
+                        </div>
+                        <span className="coverage-row-percent">{Math.round(subject.percent)}%</span>
+                    </div>
+                    {(subject.units || []).map(unit => (
+                        <div key={unit.id} style={{marginLeft: '24px'}}>
+                            <div className="coverage-row">
+                                <span className="coverage-row-name" style={{fontWeight: 400}}>📂 {unit.name}</span>
+                                <div className="coverage-bar-container">
+                                    <div className={`coverage-bar-fill ${unit.status.toLowerCase().replace('_', '-')}`}
+                                         style={{width: `${unit.percent}%`}} />
+                                </div>
+                                <span className="coverage-row-percent">{Math.round(unit.percent)}%</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
+}
+
 // ==================== APP ====================
 function App() {
     const auth = useAuth();
     const { toast, show: showToast } = useToast();
-    const [page, setPage] = React.useState("dashboard");
+    const [page, setPage] = React.useState("courses");
 
     if (!auth.isAuthenticated) {
         return (
@@ -1238,10 +2661,20 @@ function App() {
                 <div className="nav-inner">
                     <span className="nav-brand">PaathAI</span>
                     <div className="nav-links">
+                        <button
+                            className={`nav-link ${page === "courses" ? "active" : ""}`}
+                            onClick={() => setPage("courses")}>
+                            📚 Courses
+                        </button>
+                        <button 
+                            className={`nav-link ${page === "live" ? "active" : ""}`}
+                            onClick={() => setPage("live")}>
+                            🎙️ Live
+                        </button>
                         <button 
                             className={`nav-link ${page === "dashboard" ? "active" : ""}`}
                             onClick={() => setPage("dashboard")}>
-                            📚 Dashboard
+                            📖 Upload
                         </button>
                         <button 
                             className={`nav-link ${page === "search" ? "active" : ""}`}
@@ -1258,6 +2691,12 @@ function App() {
             </nav>
 
             <main className="main">
+                {page === "courses" && (
+                    <CoursesPage token={auth.token} showToast={showToast} />
+                )}
+                {page === "live" && (
+                    <LiveRecordingPage token={auth.token} showToast={showToast} />
+                )}
                 {page === "dashboard" && (
                     <Dashboard token={auth.token} showToast={showToast} />
                 )}
@@ -1275,3 +2714,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
+

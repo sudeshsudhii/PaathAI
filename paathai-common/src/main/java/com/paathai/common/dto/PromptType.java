@@ -14,7 +14,9 @@ public enum PromptType {
     TUTOR("tutor"),
     ROADMAP("roadmap"),
     COVERAGE("coverage"),
-    SYLLABUS_PARSING("syllabus_parsing");
+    SYLLABUS_PARSING("syllabus_parsing"),
+    LIVE_TOPIC_DETECTION("live_topic_detection"),
+    LIVE_NOTES_UPDATE("live_notes_update");
 
     private final String directoryName;
 

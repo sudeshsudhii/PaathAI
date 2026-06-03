@@ -12,7 +12,10 @@ public enum FeatureType {
     FLASHCARD_GENERATION(2000, "Gemini Flash"),
     QUIZ_GENERATION(3000, "Gemini Flash"),
     TUTOR(4000, "Gemini Pro"),
-    SYLLABUS_PARSING(2000, "Gemini Flash");
+    SYLLABUS_PARSING(2000, "Gemini Flash"),
+    LIVE_TOPIC_DETECTION(1500, "Gemini Flash"),
+    LIVE_NOTES_UPDATE(1500, "Gemini Flash"),
+    ACADEMIC_INTELLIGENCE(2000, "Gemini Flash");
 
     private final int maxTokens;
     private final String defaultModel;
