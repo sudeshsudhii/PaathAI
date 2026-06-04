@@ -35,6 +35,9 @@ public class Course {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(nullable = false, length = 20)
+    private String status = "ACTIVE"; // ACTIVE, ARCHIVED
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
