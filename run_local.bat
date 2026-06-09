@@ -17,7 +17,7 @@ echo.
 echo ===================================================
 echo PaathAI native services have been launched in separate windows!
 echo ===================================================
-echo Note: The backend will crash if PostgreSQL (with pgvector) is not running on port 5432.
-echo Note: Audio transcription will fail if Whisper ASR is not running on port 9000.
+echo Note: Since Docker is not used, the backend runs on an embedded H2 database.
+echo Note: Audio transcription requires a local Whisper ASR instance on port 9000.
 echo.
 pause

@@ -27,13 +27,22 @@ public interface LiveTranscriptChunkRepository extends JpaRepository<LiveTranscr
     @Query("UPDATE LiveTranscriptChunk c SET c.status = 'FINAL' WHERE c.sessionId = :sessionId AND c.status <> 'FINAL'")
     int finalizeAllChunks(@Param("sessionId") Long sessionId);
 
-    /** Find chunks with embeddings for live search (native query for pgvector). */
-    @Query(value = "SELECT * FROM live_transcript_chunks " +
-            "WHERE session_id = :sessionId AND embedding IS NOT NULL " +
-            "ORDER BY embedding <=> CAST(:embedding AS vector) LIMIT :limit",
-            nativeQuery = true)
-    List<LiveTranscriptChunk> findSimilarChunksBySessionId(
-            @Param("sessionId") Long sessionId,
-            @Param("embedding") String embedding,
-            @Param("limit") int limit);
+    /** Find chunks with embeddings for live search (in-memory fallback for H2). */
+    default List<LiveTranscriptChunk> findSimilarChunksBySessionId(
+            Long sessionId,
+            String embedding,
+            int limit) {
+        float[] targetVector = com.paathai.common.util.VectorUtils.parseEmbedding(embedding);
+        return findBySessionIdOrderBySequenceNumber(sessionId).stream()
+                .filter(c -> c.getEmbedding() != null && !c.getEmbedding().isEmpty())
+                .sorted((a, b) -> {
+                    double simA = com.paathai.common.util.VectorUtils.cosineSimilarity(
+                            com.paathai.common.util.VectorUtils.parseEmbedding(a.getEmbedding()), targetVector);
+                    double simB = com.paathai.common.util.VectorUtils.cosineSimilarity(
+                            com.paathai.common.util.VectorUtils.parseEmbedding(b.getEmbedding()), targetVector);
+                    return Double.compare(simB, simA);
+                })
+                .limit(limit)
+                .toList();
+    }
 }

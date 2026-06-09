@@ -13,22 +13,26 @@ import java.util.Optional;
 public interface SyllabusTopicRepository extends JpaRepository<com.paathai.common.entity.SyllabusTopic, Long> {
 
     /**
-     * Find syllabus topics similar to the given embedding via pgvector cosine similarity.
+     * Find syllabus topics similar to the given embedding using in-memory cosine similarity fallback.
      * Filters by course — joins through syllabi → subjects → units → syllabus_topics.
      */
-    @Query(value = """
-        SELECT st.* FROM syllabus_topics st
-        JOIN units u ON st.unit_id = u.id
-        JOIN subjects s ON u.subject_id = s.id
-        JOIN syllabi sy ON s.syllabus_id = sy.id
-        WHERE sy.course_id = :courseId AND st.embedding IS NOT NULL
-        ORDER BY st.embedding <=> CAST(:embedding AS vector)
-        LIMIT :limit
-        """, nativeQuery = true)
-    List<com.paathai.common.entity.SyllabusTopic> findSimilarByCourseId(
-            @Param("courseId") Long courseId,
-            @Param("embedding") String embedding,
-            @Param("limit") int limit);
+    default List<com.paathai.common.entity.SyllabusTopic> findSimilarByCourseId(
+            Long courseId,
+            String embedding,
+            int limit) {
+        float[] targetVector = com.paathai.common.util.VectorUtils.parseEmbedding(embedding);
+        return findAllByCourseId(courseId).stream()
+                .filter(t -> t.getEmbedding() != null && !t.getEmbedding().isEmpty())
+                .sorted((a, b) -> {
+                    double simA = com.paathai.common.util.VectorUtils.cosineSimilarity(
+                            com.paathai.common.util.VectorUtils.parseEmbedding(a.getEmbedding()), targetVector);
+                    double simB = com.paathai.common.util.VectorUtils.cosineSimilarity(
+                            com.paathai.common.util.VectorUtils.parseEmbedding(b.getEmbedding()), targetVector);
+                    return Double.compare(simB, simA); // Descending order
+                })
+                .limit(limit)
+                .toList();
+    }
 
     List<com.paathai.common.entity.SyllabusTopic> findByUnitIdOrderBySortOrder(Long unitId);
 
